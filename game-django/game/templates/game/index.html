@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Webgame</title>
+        <style>
+            body {
+                background-color: white;
+                color: black;
+                font-family: "Lucida Console", Monaco, monospace;
+                text-align: left;
+            }
+            canvas {
+                padding-left: 0;
+                padding-right: 0;
+                margin-left: auto;
+                margin-right: auto;
+                display: block;
+                border: 5px solid black;
+            }
+            form input {
+                width: 80%;
+            }
+            form button {
+                width: 10%;
+            }
+            ul {
+                list-style-type: none;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body oncontextmenu="return false">
+        <canvas id="gamewindow"></canvas>
+        <form action="" id="playerform" onsubmit="return false">
+              <button>Set Name</button>
+              <input id="playername" autocomplete="off" />
+        </form>
+        <form action="" id="inputform" onsubmit="return false">
+              <button>Chat</button>
+              <input id="inputmessage" autocomplete="off" />
+        </form>
+        <ul id="messages"></ul>
+        <script>
+            window.requestAnimationFrame = window.requestAnimationFrame || 
+                    window.webkitRequestAnimationFrame || 
+                    window.msRequestAnimationFrame || 
+                    window.mozRequestAnimationFrame;
+            var Input = {}; // 37~40 are left, up, right, down; mx, my are mouse coords; ml, mr are mouse buttons;
+            Input.mx = 0;
+            Input.my = 0;
+            Input.ml = false;
+            Input.mr = false;
+            var Entities = [];
+            var Draw = null; // initialized in Game.start
+            var Game = {
+                canvas: document.createElement('canvas'),
+                thisTime: Date.now(),
+                prevTime: Date.now()
+            };/*
+            Game.updates = function(dt) {
+                for(i = 0; i < Entities.length; i++) {
+                    Entities[i].update(dt);
+                }
+            };
+            Game.collided = function(a, b) {
+                var rc = false;
+                var distSq = (a.x - b.x) * (a.x - b.x) + (a.y- b.y) * (a.y- b.y);
+                var radSq = (a.r + b.r) * (a.r + b.r);
+                if(distSq <= radSq) {
+                    rc = true;
+                }
+                return rc;
+            };
+            Game.collisions = function() {
+                for(i = 0; i < Entities.length; i++) {
+                    for(j = i + 1; j < Entities.length; j++) {
+                        if(this.collided(Entities[i], Entities[j])) {
+                            Entities[i].collide(Entities[j]);
+                            Entities[j].collide(Entities[i]);
+                        }
+                    }
+                }
+            };*/
+            Game.renders = function() {
+                Draw.strokeStyle = '#ffffff';
+                Draw.fillStyle = '#000000';
+                Draw.lineWidth = 1;
+                Draw.fillRect(0, 0, this.canvas.width, this.canvas.height)
+                for(i = 0; i < Entities.length; i++) {
+                    Draw.strokeStyle = '#ffffff';
+                    Draw.fillStyle = '#000000';
+                    Draw.lineWidth = 2;
+                    if (Entities[i].tag == 'player') {
+                        let player = Entities[i];
+                        Draw.beginPath();
+                        Draw.moveTo(player.x, player.y);
+                        Draw.moveTo(player.x + Math.cos(player.angle) * 20, player.y + Math.sin(player.angle) * 20);
+                        Draw.lineTo(player.x + Math.cos(player.angle + 2.5) * 20, player.y + Math.sin(player.angle + 2.5) * 20);
+                        Draw.lineTo(player.x + Math.cos(player.angle - 2.5) * 20, player.y + Math.sin(player.angle - 2.5) * 20);
+                        Draw.closePath();
+                        Draw.lineWidth = 5;
+                        Draw.strokeStyle = '#aaaaaa';
+                        Draw.stroke();
+                        Draw.fillStyle = 'ff0000';
+                        Draw.fill();
+                    }
+                    else if (Entities[i].tag == 'shot') {
+                        let shot = Entities[i];
+                        Draw.strokeStyle='#ff0000';
+                        Draw.beginPath();
+                        Draw.arc(shot.x, shot.y, shot.r, 0, 2 * Math.PI);
+                        Draw.stroke();
+                    }
+                }
+            };
+            Game.run = function(dt) {
+                /*Game.thisTime = Date.now();
+                Game.updates((Game.thisTime - Game.prevTime) / 1000);
+                Game.collisions();*/
+                Game.renders();
+                //Game.prevTime = Game.thisTime;
+                window.requestAnimationFrame(Game.run);
+            };
+            Game.start = function(canvasId = null) { // Call at bottom of your code
+                if (canvasId != null) Game.canvas = document.getElementById(canvasId);
+                Game.canvas.width = 700;
+                Game.canvas.height = 700;
+                if (canvasId == null) document.body.appendChild(Game.canvas);
+                addEventListener('keydown', 
+                    function(e) {Input[e.keyCode] = true;},
+                    false);
+                addEventListener('keyup', 
+                    function(e) {delete Input[e.keyCode];}, 
+                    false);
+                addEventListener('mousemove',
+                    function(e) {
+                        Input['mx'] = e.clientX - Game.canvas.getBoundingClientRect().left;
+                        Input['my'] = e.clientY - Game.canvas.getBoundingClientRect().top;
+                    },
+                    false);
+                addEventListener('mousedown',
+                    function(e) {
+                        if (e.button == 0) Input['ml'] = true;
+                        else if (e.button == 2) Input['mr'] = true;
+                    },
+                    false);
+                addEventListener('mouseup',
+                    function(e) {
+                        if (e.button == 0) Input['ml'] = false;
+                        else if (e.button == 2) Input['mr'] = false;
+                    },
+                    false);
+                Draw = Game.canvas.getContext('2d');
+                Game.run();
+            };
+            var Entity = function(x = 0, y = 0, r = 0) {
+                this.x = x;
+                this.y = y;
+                this.r = r;
+                this.update = function(dt) {};
+                this.collide = function(e) {};
+                this.render = function() {};
+                this.destroy = function() {
+                    this.update = function(dt) {
+                        Entities.splice(Entities.indexOf(this),1);
+                    };
+                }
+                Entities.push(this);
+            };
+        </script>
+        <script>
+            var socket = new WebSocket('ws://' + window.location.host + '/ws/game/');
+            var playername = 'Anonymous';
+            var me = null;
+            var OnSendMessage = function(msg) {
+                socket.send(JSON.stringify({
+                    event: 'chat message',
+                    message: msg
+                }));
+            };
+            document.getElementById('inputform').addEventListener('submit', function() {
+                var txt = document.getElementById('inputmessage').value;
+                OnSendMessage(playername + ': ' + txt);
+            });
+            document.getElementById('playerform').addEventListener('submit', function() {
+                var txt = document.getElementById('playername').value;
+                playername = txt;
+            });
+            var OnReceiveMessage = function(msg) {
+                var li = document.createElement('LI');
+                var txt = document.createTextNode(msg);
+                li.appendChild(txt);
+                var mess = document.getElementById('messages');
+                mess.insertBefore(li, mess.firstChild);
+                while (mess.childNodes.length > 20) mess.removeChild(mess.lastChild);
+            };
+            var OnSendSync = function() {
+                socket.send(JSON.stringify({
+                    event: 'sync',
+                    id: me, 
+                    mx: Input['mx'], 
+                    my: Input['my'], 
+                    ml: Input['ml'], 
+                    mr: Input['mr']
+                }));
+            };
+            var OnRecieveAdd = function(dat) {
+                if (me == null) {
+                    me = dat.id;
+                    setInterval(OnSendSync, 50);
+                    Game.start('gamewindow');
+                }
+            };
+            var OnReceiveSync = function(dat) {
+                Entities = dat.Entities;
+            };
+            socket.onmessage = function(e) {
+                var dat = JSON.parse(e.data);
+                if (dat.event == 'chat message') OnReceiveMessage(dat.message);
+                if (dat.event == 'add') OnRecieveAdd(dat);
+                if (dat.event == 'sync') OnReceiveSync(dat);
+            };
+            socket.onopen = () => {socket.send(JSON.stringify({event: 'new player'}));};
+        </script>
+    </body>
+</html>

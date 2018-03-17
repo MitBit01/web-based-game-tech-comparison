@@ -1,0 +1,474 @@
++ PFILE_MY='psql -U postgres -f'
++ PSTAT_MY='psql -U postgres -c'
++ MFILE_MY='mysql -u root --password=user default_db'
++ MSTAT_MY='mysql -u root --password=user default_db -e'
++ echo ==== BEGIN PSQL ====
+==== BEGIN PSQL ====
++ echo == init
+== init
++ psql -U postgres -f init-psql.sql
+DROP TABLE
+DROP TABLE
+DROP TABLE
+DROP TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+
+real	0m0.199s
+user	0m0.024s
+sys	0m0.000s
++ echo == insert single and many and delete
+== insert single and many and delete
++ psql -U postgres -f insert_single_transaction.sql
+INSERT 0 26
+
+real	0m0.038s
+user	0m0.024s
+sys	0m0.000s
++ psql -U postgres -c 'delete from accounts;'
+DELETE 26
+
+real	0m0.119s
+user	0m0.020s
+sys	0m0.004s
++ psql -U postgres -f insert_many_transaction.sql
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+
+real	0m0.148s
+user	0m0.016s
+sys	0m0.008s
++ psql -U postgres -c 'select * from accounts'
+ id |  uname   |                             pwdsalt                              |                             pwdhash                              
+----+----------+------------------------------------------------------------------+------------------------------------------------------------------
+ 27 | alpha    | eaa51b20f97669a1628b0565cb4ff1905d987f527fa9b2443358ced877e06959 | cd59a27009e85c88677603f2a9fb84aca630e56c0a5964590590cc128aaced34
+ 28 | bravo    | 8ed805f086a20dd2dd689cea7c76b4b984e95c66c81a1ca73890b3325173c9bd | 2b6ae0debababc5dafdcf9604ef7a7c72753ea9e69f149ea6d39c7d717a61af1
+ 29 | charlie  | 3ea6e7028800ecd400f5f898af73e4600c20f953065e02e91d48985766285382 | 4472606e38312d0b6ab1509b1340ab0ae54490ce7f4ed2e6b69fe857a80feabb
+ 30 | delta    | e1ad036627e6795d0d3cb9a02b29986f059ae2ed734a37d5c6c8b765b9d20c64 | bf2e2af91357a5dd08565f57db1e8822efee1dfc56d9c55b952c5d4cc5abfd89
+ 31 | echo     | b70e50269b07bf90fdca1e78920b671917b7a8b8c848429b2a81da44c775c50b | edf1d91f7ff2c8eb14e1d420e15a75f387a753e1ce1c93400e40ad13d4f2909d
+ 32 | foxtrot  | d56e3c741419ad5399df25c7b60963a85939138448f85c89b4333ece45734b16 | 506cb9b793f01b1dced64e6b068e947e91462f09d0fbfe257228989a403bfeee
+ 33 | golf     | fb332bc3b0f64618df54a71d88f5674dedcf8a685e6df9c3f3aa138a684f45a3 | 49da62fe555f6f10ee252a26e0feaac132ddafc66c07036fae9f04a79541dd6f
+ 34 | hotel    | 5b5170af2e5a88a3dc16a5b9ca548bd4c4a64aafc73f8ad3be189c7521d1a45f | b15007da929b21d2ace98e7f09935983fbff5c914a64446fa34bbed5538f27da
+ 35 | indigo   | 8cd911164752291babc3ddc32d2678179d274bd0c9384c3b664f618dc7b24cb2 | 40e6b6877655fd7aa21eec50c808c8ad8ba08c9cc1ed5284c4bbcf5f7c394a54
+ 36 | juliet   | 8ad9b7f0406d3e7d55b0891b3976730fc2581498fe830e6da5198c450ad9114b | 05a0d95005004f37ed22fd86de86205f7bbb66a02ea916eea61305a24fe1d8e5
+ 37 | kilo     | 30c00001421b3ca66882a6b5cc757653442317d1ccabb01bc06ccbf5cd209db7 | 0ac2366ea45915543e4c9f3f56ca6484b9c8e667a4010a19f15548fa16b481eb
+ 38 | lima     | 2eb6a7b98301c48f460b671cc9458b10e2965f6afd5c2fc63de44b7810df6330 | 9acd9a56b69471d1785454a745cff454839e6eee709de10468943fe7829aa498
+ 39 | mike     | bb4a16beaf932793f6d05389af7e856d98bb212eb5cbd5cc991f0d2d3718b6ce | c815af66b9aaa901623464e275153e6e877aaa4d7c90b913d465a1f22690ddba
+ 40 | november | 7f1f940b6b9703427b71bb511998ec9b0eac29273a9c096924bad9d53a97355a | 4ba3ac1a8e1252f3ecf8c0953a586e3615462edc3345764041808bcb4ce18041
+ 41 | oscar    | fc157a36e3c9ed4a683e8cb936ce9b3e160c176dd3d4aaff415892ea20638830 | e3d4df7ad0496caf71f4e999db5fd4be38c9de10b57cc5ae47cfc3f6cd11aece
+ 42 | papa     | 60fa583c4f99134246cc7a6fea8c615102ef6ecda07d4b3965ee3f1f0cc3055e | 95356f4be6fd6dad71f8174f05ec47db3fa8f5c09225114212169e99162ff992
+ 43 | qubec    | 6c74911509d6b6b2455c6aa7789d1000ef8b5cbbeca13636c9bab5e7ab19964b | 980160f92baa3c17606f4511b50d70224c31cc9a6be918bfdc21513041ef338b
+ 44 | romeo    | 74bd16b147810f062b7081002c432c43256aba6550bcf857616c76793b4022f3 | 70b2f491678da439742d077aa8e347e2e2b8be07776e25a91f6c5f981721c8f7
+ 45 | sierra   | 69671d8ac3025ddf645023a8314546d7fcb0374040b1357e74218b02946aff92 | 59cdf8812469511d1887e4b8b51721ec72abbe7f61f46502f1abcc9b914a1e5e
+ 46 | tango    | 272960ca4d10bcaaeedcefa094eb7441c2d439599af50ebded8a2039533b1383 | 8a9b41c95a4a0754d4f43d516f3b75673f49a0958dafe881bfbe2f97c4c87dad
+ 47 | uniform  | 2a66b4092370dfb9f6394831dd2be56b423ef2d96a3a15cea6e2a3920da87a9d | 30f26b3334353ec06f78055f2ba062b0594ddabefe90d4b2c81c852218199426
+ 48 | victor   | a11329eb6d81e14f2cc8910bdaa944a68e2af71f2d8bbe5305347aeb29e42201 | 0366e50a245e4e68be2b3ce63f995a7a54e4f7e3c612c2636e8f4e178dfd3f6d
+ 49 | whiskey  | 06e1c6ea29b58aad49a87f7324b01153dc467ef649de79ba02fb6039a45bd088 | 41688dd4997da1cb748d4a5da4be1c22b5d38d47280ca70a8ff901384ce2b356
+ 50 | xray     | a917805a911fa5d5c96a8181f2e09bb369ceac2eed8aeacd71605749c35d6cfb | 3d5dcc94982db39df6d94e95595b2b97faae81a986ff4807fc1f8ae2bd6d3a75
+ 51 | yankee   | cb13e1bb54e27816ff6c6b2449da164f9b8ec8c8f4e411ec203d243f44bd106f | 2f4745fc80ce0f07af6d984affc0f5888642b3c83fe56e218d670d7cd054cab5
+ 52 | zulu     | 66d09667edb14c09f8a23660d38c2a9547db7fe8bad5e22294dedcc379ad0239 | 66d09667edb14c09f8a23660d38c2a9547db7fe8bad5e22294dedcc379ad0239
+(26 rows)
+
+
+real	0m0.035s
+user	0m0.024s
+sys	0m0.000s
++ psql -U postgres -c 'delete from accounts;'
+DELETE 26
+
+real	0m0.078s
+user	0m0.020s
+sys	0m0.004s
++ echo == test squites
+== test squites
++ psql -U postgres -f init-psql.sql
+DROP TABLE
+DROP TABLE
+DROP TABLE
+DROP TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+
+real	0m0.070s
+user	0m0.020s
+sys	0m0.004s
++ psql -U postgres -f insert_test_data.sql
+INSERT 0 26
+INSERT 0 22
+INSERT 0 6
+INSERT 0 10
+
+real	0m0.119s
+user	0m0.024s
+sys	0m0.000s
++ psql -U postgres -f alter_test_data.sql
+UPDATE 1
+UPDATE 1
+UPDATE 1
+UPDATE 13
+UPDATE 3
+UPDATE 21
+UPDATE 3
+UPDATE 2
+
+real	0m0.063s
+user	0m0.036s
+sys	0m0.008s
++ psql -U postgres -f query_test_data.sql
+   uname   
+-----------
+ november
+ oscar
+ papa
+ qubec
+ romeo
+ sierra
+ tango
+ uniform
+ victor
+ whiskey
+ xray0
+ yankee1
+ zulu2
+ alpha_1
+ bravo_1
+ charlie_1
+ delta_1
+ echo_1
+ foxtrot_1
+ golf_1
+ hotel_1
+ indigo_1
+ juliet_1
+ kilo_1
+ lima_1
+ mike_1
+(26 rows)
+
+   uname   | score 
+-----------+-------
+ delta_1   |   105
+ whiskey   |   600
+ zulu2     |   606
+ delta_1   |   618
+ indigo_1  |  7288
+ qubec     | 16888
+ mike_1    | 20212
+ kilo_1    | 26908
+ charlie_1 | 28998
+ lima_1    | 55846
+(10 rows)
+
+   uname   |    name    | chainrank 
+-----------+------------+-----------
+ alpha_1   | name1      |         1
+ bravo_1   | name2      |         1
+ charlie_1 | name3      |         1
+ delta_1   | JwOeJsfoMY |         1
+ echo_1    | xIvRdcljnw |         1
+ foxtrot_1 | nijVNueoHe |         1
+ kilo_1    | name1      |         2
+ juliet_1  | name1      |         2
+ lima_1    | name1      |         5
+ mike_1    | name1      |         6
+(10 rows)
+
+
+real	0m0.035s
+user	0m0.016s
+sys	0m0.008s
++ psql -U postgres -f delete_test_data.sql
+DELETE 2
+
+real	0m0.035s
+user	0m0.020s
+sys	0m0.000s
++ psql -U postgres -f query_test_data.sql
+   uname   
+-----------
+ november
+ oscar
+ papa
+ qubec
+ romeo
+ sierra
+ tango
+ uniform
+ victor
+ whiskey
+ xray0
+ yankee1
+ zulu2
+ charlie_1
+ delta_1
+ echo_1
+ foxtrot_1
+ golf_1
+ hotel_1
+ indigo_1
+ juliet_1
+ kilo_1
+ lima_1
+ mike_1
+(24 rows)
+
+   uname   | score 
+-----------+-------
+ delta_1   |   105
+ whiskey   |   600
+ zulu2     |   606
+ delta_1   |   618
+ indigo_1  |  7288
+ qubec     | 16888
+ mike_1    | 20212
+ kilo_1    | 26908
+ charlie_1 | 28998
+ lima_1    | 55846
+(10 rows)
+
+   uname   |    name    | chainrank 
+-----------+------------+-----------
+ charlie_1 | name3      |         1
+ delta_1   | JwOeJsfoMY |         1
+ echo_1    | xIvRdcljnw |         1
+ foxtrot_1 | nijVNueoHe |         1
+(4 rows)
+
+
+real	0m0.036s
+user	0m0.024s
+sys	0m0.000s
++ echo ===== END PSQL =====
+===== END PSQL =====
++ echo ==== BEGIN MYSQL ====
+==== BEGIN MYSQL ====
++ echo == init
+== init
++ mysql -u root --password=user
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+real	0m0.246s
+user	0m0.000s
+sys	0m0.000s
++ echo == insert single and many and delete
+== insert single and many and delete
++ mysql -u root --password=user default_db
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+real	0m0.007s
+user	0m0.000s
+sys	0m0.000s
++ mysql -u root --password=user default_db -e 'delete from accounts;'
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+real	0m0.004s
+user	0m0.000s
+sys	0m0.000s
++ mysql -u root --password=user default_db
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+real	0m0.019s
+user	0m0.000s
+sys	0m0.000s
++ mysql -u root --password=user default_db -e 'select * from accounts'
+mysql: [Warning] Using a password on the command line interface can be insecure.
+id	uname	pwdsalt	pwdhash
+27	alpha	eaa51b20f97669a1628b0565cb4ff1905d987f527fa9b2443358ced877e06959	cd59a27009e85c88677603f2a9fb84aca630e56c0a5964590590cc128aaced34
+28	bravo	8ed805f086a20dd2dd689cea7c76b4b984e95c66c81a1ca73890b3325173c9bd	2b6ae0debababc5dafdcf9604ef7a7c72753ea9e69f149ea6d39c7d717a61af1
+29	charlie	3ea6e7028800ecd400f5f898af73e4600c20f953065e02e91d48985766285382	4472606e38312d0b6ab1509b1340ab0ae54490ce7f4ed2e6b69fe857a80feabb
+30	delta	e1ad036627e6795d0d3cb9a02b29986f059ae2ed734a37d5c6c8b765b9d20c64	bf2e2af91357a5dd08565f57db1e8822efee1dfc56d9c55b952c5d4cc5abfd89
+31	echo	b70e50269b07bf90fdca1e78920b671917b7a8b8c848429b2a81da44c775c50b	edf1d91f7ff2c8eb14e1d420e15a75f387a753e1ce1c93400e40ad13d4f2909d
+32	foxtrot	d56e3c741419ad5399df25c7b60963a85939138448f85c89b4333ece45734b16	506cb9b793f01b1dced64e6b068e947e91462f09d0fbfe257228989a403bfeee
+33	golf	fb332bc3b0f64618df54a71d88f5674dedcf8a685e6df9c3f3aa138a684f45a3	49da62fe555f6f10ee252a26e0feaac132ddafc66c07036fae9f04a79541dd6f
+34	hotel	5b5170af2e5a88a3dc16a5b9ca548bd4c4a64aafc73f8ad3be189c7521d1a45f	b15007da929b21d2ace98e7f09935983fbff5c914a64446fa34bbed5538f27da
+35	indigo	8cd911164752291babc3ddc32d2678179d274bd0c9384c3b664f618dc7b24cb2	40e6b6877655fd7aa21eec50c808c8ad8ba08c9cc1ed5284c4bbcf5f7c394a54
+36	juliet	8ad9b7f0406d3e7d55b0891b3976730fc2581498fe830e6da5198c450ad9114b	05a0d95005004f37ed22fd86de86205f7bbb66a02ea916eea61305a24fe1d8e5
+37	kilo	30c00001421b3ca66882a6b5cc757653442317d1ccabb01bc06ccbf5cd209db7	0ac2366ea45915543e4c9f3f56ca6484b9c8e667a4010a19f15548fa16b481eb
+38	lima	2eb6a7b98301c48f460b671cc9458b10e2965f6afd5c2fc63de44b7810df6330	9acd9a56b69471d1785454a745cff454839e6eee709de10468943fe7829aa498
+39	mike	bb4a16beaf932793f6d05389af7e856d98bb212eb5cbd5cc991f0d2d3718b6ce	c815af66b9aaa901623464e275153e6e877aaa4d7c90b913d465a1f22690ddba
+40	november	7f1f940b6b9703427b71bb511998ec9b0eac29273a9c096924bad9d53a97355a	4ba3ac1a8e1252f3ecf8c0953a586e3615462edc3345764041808bcb4ce18041
+41	oscar	fc157a36e3c9ed4a683e8cb936ce9b3e160c176dd3d4aaff415892ea20638830	e3d4df7ad0496caf71f4e999db5fd4be38c9de10b57cc5ae47cfc3f6cd11aece
+42	papa	60fa583c4f99134246cc7a6fea8c615102ef6ecda07d4b3965ee3f1f0cc3055e	95356f4be6fd6dad71f8174f05ec47db3fa8f5c09225114212169e99162ff992
+43	qubec	6c74911509d6b6b2455c6aa7789d1000ef8b5cbbeca13636c9bab5e7ab19964b	980160f92baa3c17606f4511b50d70224c31cc9a6be918bfdc21513041ef338b
+44	romeo	74bd16b147810f062b7081002c432c43256aba6550bcf857616c76793b4022f3	70b2f491678da439742d077aa8e347e2e2b8be07776e25a91f6c5f981721c8f7
+45	sierra	69671d8ac3025ddf645023a8314546d7fcb0374040b1357e74218b02946aff92	59cdf8812469511d1887e4b8b51721ec72abbe7f61f46502f1abcc9b914a1e5e
+46	tango	272960ca4d10bcaaeedcefa094eb7441c2d439599af50ebded8a2039533b1383	8a9b41c95a4a0754d4f43d516f3b75673f49a0958dafe881bfbe2f97c4c87dad
+47	uniform	2a66b4092370dfb9f6394831dd2be56b423ef2d96a3a15cea6e2a3920da87a9d	30f26b3334353ec06f78055f2ba062b0594ddabefe90d4b2c81c852218199426
+48	victor	a11329eb6d81e14f2cc8910bdaa944a68e2af71f2d8bbe5305347aeb29e42201	0366e50a245e4e68be2b3ce63f995a7a54e4f7e3c612c2636e8f4e178dfd3f6d
+49	whiskey	06e1c6ea29b58aad49a87f7324b01153dc467ef649de79ba02fb6039a45bd088	41688dd4997da1cb748d4a5da4be1c22b5d38d47280ca70a8ff901384ce2b356
+50	xray	a917805a911fa5d5c96a8181f2e09bb369ceac2eed8aeacd71605749c35d6cfb	3d5dcc94982db39df6d94e95595b2b97faae81a986ff4807fc1f8ae2bd6d3a75
+51	yankee	cb13e1bb54e27816ff6c6b2449da164f9b8ec8c8f4e411ec203d243f44bd106f	2f4745fc80ce0f07af6d984affc0f5888642b3c83fe56e218d670d7cd054cab5
+52	zulu	66d09667edb14c09f8a23660d38c2a9547db7fe8bad5e22294dedcc379ad0239	66d09667edb14c09f8a23660d38c2a9547db7fe8bad5e22294dedcc379ad0239
+
+real	0m0.006s
+user	0m0.000s
+sys	0m0.000s
++ mysql -u root --password=user default_db -e 'delete from accounts;'
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+real	0m0.075s
+user	0m0.000s
+sys	0m0.000s
++ echo == test squites
+== test squites
++ mysql -u root --password=user
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+real	0m0.230s
+user	0m0.000s
+sys	0m0.000s
++ mysql -u root --password=user default_db
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+real	0m0.011s
+user	0m0.000s
+sys	0m0.000s
++ mysql -u root --password=user default_db
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+real	0m0.013s
+user	0m0.000s
+sys	0m0.000s
++ mysql -u root --password=user default_db
+mysql: [Warning] Using a password on the command line interface can be insecure.
+uname
+alpha_1
+bravo_1
+charlie_1
+delta_1
+echo_1
+foxtrot_1
+golf_1
+hotel_1
+indigo_1
+juliet_1
+kilo_1
+lima_1
+mike_1
+november
+oscar
+papa
+qubec
+romeo
+sierra
+tango
+uniform
+victor
+whiskey
+xray0
+yankee1
+zulu2
+uname	score
+delta_1	105
+whiskey	600
+zulu2	606
+delta_1	618
+indigo_1	7288
+qubec	16888
+mike_1	20212
+kilo_1	26908
+charlie_1	28998
+lima_1	55846
+uname	name	chainRank
+alpha_1	name1	1
+bravo_1	name2	1
+charlie_1	name3	1
+delta_1	JwOeJsfoMY	1
+echo_1	xIvRdcljnw	1
+foxtrot_1	nijVNueoHe	1
+juliet_1	name1	2
+kilo_1	name1	2
+lima_1	name1	5
+mike_1	name1	6
+
+real	0m0.007s
+user	0m0.000s
+sys	0m0.000s
++ mysql -u root --password=user default_db
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+real	0m0.005s
+user	0m0.000s
+sys	0m0.000s
++ mysql -u root --password=user default_db
+mysql: [Warning] Using a password on the command line interface can be insecure.
+uname
+charlie_1
+delta_1
+echo_1
+foxtrot_1
+golf_1
+hotel_1
+indigo_1
+juliet_1
+kilo_1
+lima_1
+mike_1
+november
+oscar
+papa
+qubec
+romeo
+sierra
+tango
+uniform
+victor
+whiskey
+xray0
+yankee1
+zulu2
+uname	score
+delta_1	105
+whiskey	600
+zulu2	606
+delta_1	618
+indigo_1	7288
+qubec	16888
+mike_1	20212
+kilo_1	26908
+charlie_1	28998
+lima_1	55846
+uname	name	chainRank
+charlie_1	name3	1
+delta_1	JwOeJsfoMY	1
+echo_1	xIvRdcljnw	1
+foxtrot_1	nijVNueoHe	1
+juliet_1	name1	2
+kilo_1	name1	2
+lima_1	name1	5
+mike_1	name1	6
+
+real	0m0.008s
+user	0m0.000s
+sys	0m0.000s
++ echo ===== END MYSQL =====
+===== END MYSQL =====
++ set +x

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Webgame</title>
+        <style>
+            body {
+                background-color: white;
+                color: black;
+                font-family: "Lucida Console", Monaco, monospace;
+                text-align: left;
+            }
+            canvas {
+                padding-left: 0;
+                padding-right: 0;
+                margin-left: auto;
+                margin-right: auto;
+                display: block;
+                border: 5px solid black;
+            }
+            form input {
+                width: 80%;
+            }
+            form button {
+                width: 10%;
+            }
+            ul {
+                list-style-type: none;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body oncontextmenu="return false">
+        <canvas id="gamewindow"></canvas>
+        <form action="" id="playerform" onsubmit="return false">
+              <button>Set Name</button>
+              <input id="playername" autocomplete="off" />
+        </form>
+        <form action="" id="inputform" onsubmit="return false">
+              <button>Chat</button>
+              <input id="inputmessage" autocomplete="off" />
+        </form>
+        <ul id="messages"></ul>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="gameEngine.js"></script>
+        <script>
+            var socket = io();
+            var playername = 'Anonymous';
+            var me = null;
+            var OnSendMessage = function(msg) {
+                socket.emit('chat message', msg);
+            };
+            document.getElementById('inputform').addEventListener('submit', function() {
+                var txt = document.getElementById('inputmessage').value;
+                OnSendMessage(playername + ': ' + txt);
+            });
+            document.getElementById('playerform').addEventListener('submit', function() {
+                var txt = document.getElementById('playername').value;
+                playername = txt;
+            });
+            var OnReceiveMessage = function(msg) {
+                var li = document.createElement('LI');
+                var txt = document.createTextNode(msg);
+                li.appendChild(txt);
+                var mess = document.getElementById('messages');
+                mess.insertBefore(li, mess.firstChild);
+                while (mess.childNodes.length > 20) mess.removeChild(mess.lastChild);
+            };
+            socket.on('chat message', OnReceiveMessage);
+            var OnSendSync = function() {
+                socket.emit('sync', {id: me, mx: Input['mx'], my: Input['my'], ml: Input['ml'], mr: Input['mr']});
+            };
+            var OnRecieveAdd = function(dat) {
+                me = dat.id;
+                setInterval(OnSendSync, 50);
+                Game.start('gamewindow');
+            };
+            socket.on('add', OnRecieveAdd);
+            var OnReceiveSync = function(dat) {
+                Entities = dat.Entities;
+            };
+            socket.on('sync', OnReceiveSync);
+            socket.emit('new player', null);
+        </script>
+    </body>
+</html>
