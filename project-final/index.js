@@ -1,14 +1,73 @@
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
+var mysql = require('mysql');
 var io = require('socket.io')(http);
 var ge = require('./gameEngine');
 app.use(express.static(__dirname + '/www'));
-io.on('connection', function(client){
-    client.on('chat message', function(msg){
+var db = (function(){
+    var conn = mysql.createConnection({
+      host: "localhost",
+      user: "adminmysql",
+      password: "adminmysql",
+      database: "default_db"
+    });
+    return {
+        query: function(sql, args){
+            return new Promise(function(resolve, reject){
+                conn.query(sql, args, function(error, result){
+                    if (error) return reject(error);
+                    resolve(result);
+                });
+            });
+        },
+        close: function(){
+            return new Promise(function(resolve, reject){
+                conn.end(function(error){
+                    if (error) return reject(error);
+                    resolve(result);
+                });
+            });
+        }
+    };
+})();
+io.on('connection', function(socket){
+    socket.on('chat message', function(msg){
         io.emit('chat message', msg);
     });
-    client.on('new player', function(){
+    socket.on('new player', function(dat){
+        var name = dat.name;
+        var newid = Math.random();
+        /*
+        var needToInsert = false;
+        conn.connect(function(err){
+            if (err) throw err;
+            sql = "SELECT * FROM accounts WHERE uname=?";
+            params = [name];
+            conn.query(sql, params, function (err, res){
+                if (err) throw err;
+                if (res.length >= 1) newid = res[0].id;
+                else needToInsert = true;
+            });
+        });
+        conn.connect(function(err){
+            if (err) throw err;
+            sql = "INSERT INTO accounts (uname, pwdsalt, pwdhash) VALUES (" + mysql.escape(name) + ", '0', '0')";
+            conn.query(sql, function (err, res){
+                if (res.length >= 1) newid = res[0].id;
+                newid = result.insertId;
+            });
+        });
+        
+        newid = db.query("SELECT * FROM accounts WHERE uname=?", [name])
+            .then(function(result){
+                if (result.length >= 1) return new Promise(function(res, rej){resolve(result);});
+                else db.query("INSERT INTO accounts (uname, pwdsalt, pwdhash) VALUES (" + mysql.escape(name) + ", '0', '0')");
+            })
+            .then(function(result){
+                if (!result.insertId) return result[0].id;
+                else return result.insertId;
+            });       */ 
         var Player = new ge.Entity(ge.Random(), ge.Random(), 15);
         Player.update = function(dt) {
             this.x += this.vx;
@@ -32,10 +91,10 @@ io.on('connection', function(client){
         Player.vy = 0;
         Player.cooldown = 0;
         Player.tag = 'player';
-        Player.id = Math.random();
-        client.emit('add', {id: Player.id});
+        Player.id = newid
+        socket.emit('add', {id: Player.id, uname: name});
     });
-    client.on('sync', function(dat) {
+    socket.on('sync', function(dat) {
         var player = ge.Entities.find(function(e) {
             return e.id === dat.id;
         });
@@ -69,8 +128,8 @@ io.on('connection', function(client){
                 };
             }
         }
-        client.emit('sync', {Entities: ge.Entities});
-    }) ;
+        socket.emit('sync', {Entities: ge.Entities});
+    });
 });
 ge.Game.start();
 setInterval(ge.Game.run, 20);

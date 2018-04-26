@@ -31,10 +31,6 @@
     </head>
     <body oncontextmenu="return false">
         <canvas id="gamewindow"></canvas>
-        <form action="" id="playerform" onsubmit="return false">
-              <button>Set Name</button>
-              <input id="playername" autocomplete="off" />
-        </form>
         <form action="" id="inputform" onsubmit="return false">
               <button>Chat</button>
               <input id="inputmessage" autocomplete="off" />
@@ -46,16 +42,15 @@
             var socket = io();
             var playername = 'Anonymous';
             var me = null;
+            document.addEventListener('mouseup', function(){
+                document.getElementById('inputmessage').focus();
+            });
             var OnSendMessage = function(msg) {
                 socket.emit('chat message', msg);
             };
             document.getElementById('inputform').addEventListener('submit', function() {
                 var txt = document.getElementById('inputmessage').value;
                 OnSendMessage(playername + ': ' + txt);
-            });
-            document.getElementById('playerform').addEventListener('submit', function() {
-                var txt = document.getElementById('playername').value;
-                playername = txt;
             });
             var OnReceiveMessage = function(msg) {
                 var li = document.createElement('LI');
@@ -71,6 +66,7 @@
             };
             var OnRecieveAdd = function(dat) {
                 me = dat.id;
+                playername = dat.uname;
                 setInterval(OnSendSync, 50);
                 Game.start('gamewindow');
             };
@@ -79,7 +75,8 @@
                 Entities = dat.Entities;
             };
             socket.on('sync', OnReceiveSync);
-            socket.emit('new player', null);
+            playername = prompt('Enter your player name!', '');
+            socket.emit('new player', {name: playername.substring(0,16)});
         </script>
     </body>
 </html>
